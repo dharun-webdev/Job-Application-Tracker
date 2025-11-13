@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-protected="true">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Job Application Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="auth.js"></script>
+    <script defer src="app.js"></script>
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="container topbar">
+            <h1 class="title">Job <span>Application</span> Tracker</h1>
+            <nav class="actions">
+                <button id="addBtn" class="btn">+ Add</button>
+                <button id="exportBtn" class="btn btn-ghost">Export CSV</button>
+                <button id="clearBtn" class="btn btn-ghost">Clear</button>
+                <button id="viewToggle" class="btn btn-ghost" title="Toggle list/board">Board</button>
+                <a class="btn btn-ghost" href="login.html" id="loginLink">Login</a>
+                <a class="btn btn-ghost" href="register.html" id="registerLink">Register</a>
+                <span id="userBadge" class="chip" hidden></span>
+                <button id="logoutBtn" class="btn btn-ghost" hidden>Logout</button>
+                <button id="themeToggle" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">
+                    <svg class="icon moon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                    <svg class="icon sun" viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M12 4V2m0 20v-2m8-8h2M2 12h2m12.95 6.95 1.41 1.41M5.64 5.64 4.22 4.22m12.73 0 1.41 1.41M5.64 18.36 4.22 19.78"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container layout" role="main">
+        <aside class="panel" aria-label="New or edit application">
+            <div class="section-title">New / Edit</div>
+            <form id="appForm" autocomplete="off">
+                <input type="hidden" id="appId" />
+                <div class="field"><label for="role">Role</label><input id="role" required
+                        placeholder="e.g., Frontend Developer" /></div>
+                <div class="field"><label for="company">Company</label><input id="company" required
+                        placeholder="e.g., Acme Corp" /></div>
+                <div class="row">
+                    <div class="field"><label for="location">Location</label><input id="location"
+                            placeholder="Remote / City" /></div>
+                    <div class="field"><label for="date">Date Applied</label><input id="date" type="date" /></div>
+                </div>
+                <div class="row">
+                    <div class="field"><label for="status">Status</label>
+                        <select id="status">
+                            <option value="applied">Applied</option>
+                            <option value="interview">Interviewing</option>
+                            <option value="offer">Offer</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="field"><label for="priority">Priority</label>
+                        <select id="priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field"><label for="tags">Tags (comma separated)</label><input id="tags"
+                        placeholder="React, Internship" /></div>
+                <div class="field"><label for="notes">Notes</label><textarea id="notes"
+                        placeholder="Anything useful..."></textarea></div>
+                <div class="actions"><button type="submit" class="btn">Save</button><button type="button" id="resetBtn"
+                        class="btn btn-ghost">Reset</button></div>
+            </form>
+
+            <div class="section-title">Filter</div>
+            <div class="field"><label for="filterStatus">Status</label>
+                <select id="filterStatus">
+                    <option value="all">All</option>
+                    <option value="applied">Applied</option>
+                    <option value="interview">Interviewing</option>
+                    <option value="offer">Offer</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="field"><label for="filterPriority">Priority</label>
+                <select id="filterPriority">
+                    <option value="all">All</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            <div class="field"><label for="sortBy">Sort by</label>
+                <select id="sortBy">
+                    <option value="createdDesc">Newest</option>
+                    <option value="createdAsc">Oldest</option>
+                    <option value="status">Status</option>
+                    <option value="priority">Priority</option>
+                    <option value="company">Company</option>
+                </select>
+            </div>
+        </aside>
+
+        <main class="panel">
+            <div class="toolbar">
+                <input id="search" placeholder="Search role, company, tags..." aria-label="Search" />
+                <div class="legend" aria-hidden="true">
+                    <span class="chip"><span class="dot dot-applied"></span>Applied</span>
+                    <span class="chip"><span class="dot dot-interview"></span>Interviewing</span>
+                    <span class="chip"><span class="dot dot-offer"></span>Offer</span>
+                    <span class="chip"><span class="dot dot-rejected"></span>Rejected</span>
+                </div>
+            </div>
+
+            <section class="stats" aria-label="Overview">
+                <div class="stat">
+                    <h3>Total</h3>
+                    <p id="statTotal">0</p>
+                </div>
+                <div class="stat s2">
+                    <h3>Interviewing</h3>
+                    <p id="statInterview">0</p>
+                </div>
+                <div class="stat s3">
+                    <h3>Offers</h3>
+                    <p id="statOffer">0</p>
+                </div>
+                <div class="stat s4">
+                    <h3>Rejected</h3>
+                    <p id="statRejected">0</p>
+                </div>
+            </section>
+
+            <section id="list" class="list" aria-live="polite"></section>
+            <section id="board" class="board" hidden aria-label="Kanban"></section>
+            <div id="emptyState" class="empty" hidden>No applications yet. Use <strong>+ Add</strong>.</div>
+        </main>
+    </div>
+
+    <template id="cardTpl">
+        <article class="card" role="article">
+            <div class="card-header">
+                <div>
+                    <div class="card-title"></div>
+                    <div class="meta"></div>
+                </div>
+                <div class="card-actions">
+                    <button class="icon-btn" data-action="edit" title="Edit" aria-label="Edit">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" />
+                        </svg>
+                    </button>
+                    <button class="icon-btn" data-action="dup" title="Duplicate" aria-label="Duplicate">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z" />
+                        </svg>
+                    </button>
+                    <button class="icon-btn danger" data-action="delete" title="Delete" aria-label="Delete">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M6 7h12l-1 14H7L6 7zm3-4h6l1 2h4v2H4V5h4l1-2z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="tags"></div>
+            <p class="notes"></p>
+        </article>
+    </template>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>Built by <strong>Dharun</strong> · HTML · CSS · Vanilla JS</p>
+        </div>
+    </footer>
+</body>
+
+</html>

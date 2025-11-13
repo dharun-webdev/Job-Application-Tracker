@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register · Job Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="auth.js"></script>
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="container topbar">
+            <h1 class="title">Create <span>Account</span></h1>
+            <nav class="actions"><a class="btn btn-ghost" href="login.html">Login</a></nav>
+        </div>
+    </header>
+    <main class="container">
+        <section class="panel" style="max-width:420px;margin:40px auto;padding:18px">
+            <h2 style="margin:0 0 6px">Get started</h2>
+            <p class="section-title" style="margin:0 0 12px">Local demo account (stored in your browser)</p>
+            <form id="reg" class="form">
+                <div class="field"><label for="name">Full Name</label><input id="name" required /></div>
+                <div class="field"><label for="email">Email</label><input id="email" type="email" required /></div>
+                <div class="field"><label for="password">Password</label><input id="password" type="password"
+                        minlength="4" required /></div>
+                <div class="actions" style="justify-content:space-between"><button class="btn"
+                        type="submit">Register</button><a class="btn btn-ghost" href="login.html">I have an account</a>
+                </div>
+            </form>
+        </section>
+    </main>
+    <script>
+        document.getElementById('reg').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const users = Auth.getUsers();
+            if (users.some(u => u.email === email)) { alert('Email already registered'); return; }
+            const user = { name: document.getElementById('name').value.trim(), email, password: document.getElementById('password').value };
+            users.push(user); Auth.saveUsers(users); Auth.setSession(user);
+            location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>

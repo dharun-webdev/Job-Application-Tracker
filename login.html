@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login · Job Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="auth.js"></script>
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="container topbar">
+            <h1 class="title">Job <span>Application</span> Tracker</h1>
+            <nav class="actions"><a class="btn btn-ghost" href="register.html">Register</a></nav>
+        </div>
+    </header>
+    <main class="container">
+        <section class="panel" style="max-width:420px;margin:40px auto;padding:18px">
+            <h2 style="margin:0 0 6px">Welcome back</h2>
+            <p class="section-title" style="margin:0 0 12px">Sign in to continue</p>
+            <form id="login" class="form">
+                <div class="field"><label for="email">Email</label><input id="email" type="email" required /></div>
+                <div class="field"><label for="password">Password</label><input id="password" type="password"
+                        required /></div>
+                <div class="actions" style="justify-content:space-between"><button class="btn"
+                        type="submit">Login</button><a class="btn btn-ghost" href="register.html">Create account</a>
+                </div>
+            </form>
+        </section>
+    </main>
+    <script>
+        const form = document.getElementById('login');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const pwd = document.getElementById('password').value;
+            const u = Auth.getUsers().find(x => x.email === email && x.password === pwd);
+            if (!u) { alert('Invalid email or password'); return; }
+            Auth.setSession(u);
+            location.href = sessionStorage.getItem('jt.redirect') || 'index.html';
+        });
+    </script>
+</body>
+
+</html>
